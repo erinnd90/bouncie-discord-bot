@@ -7,17 +7,17 @@ app.use(express.json());
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
 const TECHNICIANS = {
-  "123456789012345": "Technician 1",
-  "987654321098765": "Technician 2",
-};
+  "866392060619172": "Silverado",
+  "866392060612052": "Frontier",
+  "865612071225938": "F150"};
 
 const CUSTOMER_LOCATIONS = [
   {
-    name: "Customer Name",
-    address: "123 Main St, Houston, TX",
-    lat: 29.7412,
-    lon: -95.5631,
-    radiusMeters: 150,
+    name: "Dad's House",
+    address: "600 Havenwood Pl, Conroe, TX 77301",
+    lat: 30.299684729434677,
+    lon: -95.46238683998232,
+    radiusMeters: 50,
   },
 ];
 
@@ -84,7 +84,10 @@ const arrivedState = {};
 
 app.post("/bouncie", async (req, res) => {
   res.sendStatus(200);
-
+  
+const receivedKey = req.headers['x-webhook-key'] || req.body.webhookKey;
+if (receivedKey !== process.env.BOUNCIE_WEBHOOK_KEY) return;
+  
   const event = req.body;
   if (event.eventType !== "tripData") return;
 
