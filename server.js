@@ -10,9 +10,9 @@ const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 
 const TECHNICIANS = {
-  "866392060619172: "Silverado",
-  "866392060612052: "Frontier",
-  "865612071225938: "F150"};
+  "866392060619172": "Silverado",
+  "866392060612052": "Frontier",
+  "865612071225938": "F150"};
 
 // --- Geocoding ---
 async function geocodeAddress(address) {
