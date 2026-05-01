@@ -86,10 +86,10 @@ app.post("/bouncie", async (req, res) => {
   res.sendStatus(200);
 
   const event = req.body;
-  if (event.eventType !== "location") return;
+  if (event.eventType !== "tripData") return;
 
   const { imei, data } = event;
-  const { lat, lon, timestamp } = data;
+  const { lat, lon, timestamp } = data.gps || data;
   if (!lat || !lon) return;
 
   const technician = TECHNICIANS[imei] || `Vehicle ${imei}`;
