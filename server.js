@@ -62,7 +62,8 @@ async function loadCustomers() {
           address: fullAddress,
           lat: coords.lat,
           lon: coords.lon,
-          radiusMeters: 100,
+          radiusMeters: 50,
+          
         });
         console.log(`✅ Geocoded: ${name} → ${fullAddress}`);
       } else {
