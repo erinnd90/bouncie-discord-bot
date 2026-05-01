@@ -8,16 +8,16 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const BOUNCIE_WEBHOOK_KEY = process.env.BOUNCIE_WEBHOOK_KEY;
 const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+const GOOGLE_GEOCODING_KEY = process.env.GOOGLE_GEOCODING_KEY;
 
 const TECHNICIANS = {
   "866392060619172": "Silverado",
   "866392060612052": "Frontier",
   "865612071225938": "F150"};
 
-// --- Geocoding ---
 async function geocodeAddress(address) {
   const encoded = encodeURIComponent(address);
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encoded}&key=${process.env.GOOGLE_GEOCODING_KEY}`;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encoded}&key=${GOOGLE_GEOCODING_KEY}`;
   const res = await fetch(url);
   const data = await res.json();
   if (data.results && data.results.length > 0) {
@@ -26,7 +26,7 @@ async function geocodeAddress(address) {
   }
   return null;
 }
-// --- Load customers from Airtable ---
+
 let customerLocations = [];
 
 async function loadCustomers() {
@@ -68,8 +68,7 @@ async function loadCustomers() {
       } else {
         console.warn(`⚠️ Could not geocode: ${fullAddress}`);
       }
-
-      // Nominatim rate limit — 1 request per second
+    }
 
     offset = data.offset;
   } while (offset);
@@ -78,7 +77,6 @@ async function loadCustomers() {
   console.log(`✅ Loaded ${customerLocations.length} customer locations.`);
 }
 
-// --- Geofence ---
 function getDistanceMeters(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const toRad = (deg) => (deg * Math.PI) / 180;
@@ -98,7 +96,6 @@ function checkGeofence(lat, lon) {
   return null;
 }
 
-// --- Discord Alert ---
 async function sendDiscordAlert(technician, location, lat, lon, timestamp) {
   const googleMapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
   const time = new Date(timestamp).toLocaleTimeString("en-US", {
@@ -139,10 +136,8 @@ async function sendDiscordAlert(technician, location, lat, lon, timestamp) {
   }
 }
 
-// --- Arrival Deduplication ---
 const arrivedState = {};
 
-// --- Bouncie Webhook ---
 app.post("/bouncie", async (req, res) => {
   res.sendStatus(200);
 
@@ -172,9 +167,7 @@ app.post("/bouncie", async (req, res) => {
   }
 });
 
-// --- Start ---
 loadCustomers().then(() => {
-  // Refresh customer list every 10 minutes
   setInterval(loadCustomers, 10 * 60 * 1000);
 });
 
