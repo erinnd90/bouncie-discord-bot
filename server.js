@@ -17,17 +17,15 @@ const TECHNICIANS = {
 // --- Geocoding ---
 async function geocodeAddress(address) {
   const encoded = encodeURIComponent(address);
-  const url = `https://nominatim.openstreetmap.org/search?q=${encoded}&format=json&limit=1`;
-  const res = await fetch(url, {
-    headers: { "User-Agent": "bouncie-discord-bot" },
-  });
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encoded}&key=${process.env.GOOGLE_GEOCODING_KEY}`;
+  const res = await fetch(url);
   const data = await res.json();
-  if (data && data.length > 0) {
-    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+  if (data.results && data.results.length > 0) {
+    const { lat, lng } = data.results[0].geometry.location;
+    return { lat, lon: lng };
   }
   return null;
 }
-
 // --- Load customers from Airtable ---
 let customerLocations = [];
 
@@ -72,8 +70,6 @@ async function loadCustomers() {
       }
 
       // Nominatim rate limit — 1 request per second
-      await new Promise((r) => setTimeout(r, 1100));
-    }
 
     offset = data.offset;
   } while (offset);
